@@ -5,6 +5,7 @@ pydantic[email]==2.10.4
 pydantic-settings==2.7.1
 email-validator==2.2.0
 dependency-injector==4.46.0
+PyJWT==2.10.1
 # Only used when STORAGE_TYPE=postgres (imported lazily); the default
 # in-memory demo runs without ever touching it.
 asyncpg==0.30.0

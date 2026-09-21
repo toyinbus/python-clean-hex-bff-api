@@ -21,6 +21,7 @@ from app.internal.feature.user.delivery.http.dto.user import (
     ListUsersQuery,
     UpdateUserRequest,
     UserListResponse,
+    UserModuleStatusResponse,
     user_response_from_entity,
     user_responses_from_entities,
 )
@@ -33,6 +34,12 @@ from app.utils.response import response_error, response_success
 class UserHandler:
     def __init__(self, usecase: UserUsecase) -> None:
         self._uc = usecase
+
+    async def status(self) -> JSONResponse:
+        body = UserModuleStatusResponse(
+            message="User module is available. Listing or mutating users requires JWT permissions.",
+        )
+        return response_success(body.model_dump(mode="json"))
 
     async def list(self, query: ListUsersQuery) -> JSONResponse:
         filter = query.to_filter()

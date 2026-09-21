@@ -12,6 +12,8 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
+from app.internal.auth.delivery.http.dependencies import AuthGuard
+from app.internal.auth.infra.service.jwt_token_validator import JwtTokenValidatorImpl
 from app.internal.feature.user.delivery.http.handler import UserHandler
 from app.internal.feature.user.delivery.http.route import register_routes
 from app.internal.feature.user.domain.entity.user import (
@@ -55,12 +57,32 @@ class MockUserUsecase(UserUsecase):
             self.delete_fn(user_id)
 
 
+def _auth_guard() -> AuthGuard:
+    return AuthGuard(
+        JwtTokenValidatorImpl(
+            secret="test-secret",
+            algorithm="HS256",
+            default_expire_minutes=60,
+        ),
+        auth_enabled=False,
+    )
+
+
 def _client(uc: MockUserUsecase) -> TestClient:
     app = FastAPI()
     api = APIRouter(prefix="/api/v1")
-    api.include_router(register_routes(UserHandler(uc)))
+    api.include_router(register_routes(UserHandler(uc), _auth_guard()))
     app.include_router(api)
     return TestClient(app, raise_server_exceptions=False)
+
+
+def test_status_is_public():
+    c = _client(MockUserUsecase())
+    resp = c.get("/api/v1/users/status")
+    assert resp.status_code == 200
+    body = resp.json()
+    assert body["success"] is True
+    assert body["data"]["auth_required"] is False
 
 
 def test_list_returns_envelope():

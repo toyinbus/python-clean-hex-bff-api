@@ -20,6 +20,16 @@ from app.internal.feature.user.domain.entity.user import User
 from app.internal.feature.user.domain.port.user import ListUsersFilter, UserStatus
 from app.utils.pagination import Query
 
+# ── Public responses ───────────────────────────────────────────────────────────
+
+
+class UserModuleStatusResponse(BaseModel):
+    """Public health-style payload for the user feature (no auth)."""
+
+    message: str
+    auth_required: bool = False
+
+
 # ── Requests ───────────────────────────────────────────────────────────────────
 
 

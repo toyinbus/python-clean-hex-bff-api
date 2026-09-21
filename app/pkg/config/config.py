@@ -17,9 +17,17 @@ primitives at the DI boundary (``app/di/container.py`` + each feature
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 
 from pydantic_settings import BaseSettings, SettingsConfigDict
+
+logger = logging.getLogger(__name__)
+
+# Committed default — must be overridden in production when AUTH_ENABLED=true.
+DEFAULT_JWT_SECRET = "change-me-in-production"
+JWT_SECRET_MIN_LENGTH = 32
+_PRODUCTION_ENVIRONMENTS = frozenset({"production", "prod"})
 
 
 class Config(BaseSettings):
@@ -79,6 +87,53 @@ class Config(BaseSettings):
     DB_POOL_MIN: int = 1
     DB_POOL_MAX: int = 10
     DB_CONNECT_TIMEOUT_SEC: int = 5
+
+    # ── JWT / auth ────────────────────────────────────────────────────────────
+    # When AUTH_ENABLED=false every route skips token checks (local dev / tests).
+    AUTH_ENABLED: bool = True
+    JWT_SECRET: str = DEFAULT_JWT_SECRET
+    JWT_ALGORITHM: str = "HS256"
+    JWT_EXPIRE_MINUTES: int = 60
+    # Dev-only endpoint POST /api/v1/auth/token to mint test JWTs (Swagger-friendly).
+    AUTH_DEV_TOKEN_ENABLED: bool = True
+
+
+def validate_auth_settings(cfg: Config) -> None:
+    """Fail-fast on unsafe JWT settings. Call from the composition root at startup.
+
+    When ``AUTH_ENABLED=false`` (tests / local bypass) this is a no-op.
+    In production it refuses to start with the committed default secret, an empty
+    secret, or a secret that is too short.
+    """
+    if not cfg.AUTH_ENABLED:
+        return
+
+    secret = cfg.JWT_SECRET.strip()
+    if not secret:
+        raise RuntimeError("JWT_SECRET must not be empty when AUTH_ENABLED=true")
+
+    is_production = cfg.ENVIRONMENT.strip().lower() in _PRODUCTION_ENVIRONMENTS
+    if is_production:
+        if secret == DEFAULT_JWT_SECRET:
+            raise RuntimeError(
+                "JWT_SECRET is still the default placeholder — set a strong secret in production"
+            )
+        if len(secret) < JWT_SECRET_MIN_LENGTH:
+            raise RuntimeError(
+                f"JWT_SECRET must be at least {JWT_SECRET_MIN_LENGTH} characters in production"
+            )
+        if cfg.AUTH_DEV_TOKEN_ENABLED:
+            raise RuntimeError(
+                "AUTH_DEV_TOKEN_ENABLED must be false in production "
+                "(POST /auth/token must not mint tokens in prod)"
+            )
+        return
+
+    if secret == DEFAULT_JWT_SECRET:
+        logger.warning(
+            "JWT_SECRET is still the default placeholder. "
+            "Set a strong secret before deploying (ENVIRONMENT=production)."
+        )
 
 
 @lru_cache

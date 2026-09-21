@@ -14,7 +14,12 @@ PYTHON ?= python3
 VENV ?= .venv
 BIN := $(VENV)/bin
 PY ?= $(BIN)/python
-PORT ?= 8080
+# Defaults come from .env via pydantic-settings (REST_API_HOST / REST_API_PORT).
+# One-off override: make run PORT=9000
+_REST_PORT := $(shell $(PY) -c "from app.pkg.config.config import Config; print(Config().REST_API_PORT)" 2>/dev/null)
+_REST_HOST := $(shell $(PY) -c "from app.pkg.config.config import Config; print(Config().REST_API_HOST)" 2>/dev/null)
+PORT ?= $(if $(_REST_PORT),$(_REST_PORT),8080)
+HOST ?= $(if $(_REST_HOST),$(_REST_HOST),0.0.0.0)
 
 .DEFAULT_GOAL := help
 .PHONY: help venv install run test check lint format openapi clean
@@ -32,8 +37,8 @@ install: $(PY) ## Install runtime + dev dependencies
 	$(PY) -m pip install --upgrade pip
 	$(PY) -m pip install -r requirements.txt
 
-run: ## Run the API with autoreload (PORT=8080 by default)
-	$(PY) -m uvicorn app.main:app --reload --port $(PORT)
+run: ## Run the API with autoreload (reads REST_API_* from .env; override with PORT=)
+	$(PY) -m uvicorn app.main:app --reload --host $(HOST) --port $(PORT)
 
 test: ## Run unit tests
 	$(PY) -m pytest -q

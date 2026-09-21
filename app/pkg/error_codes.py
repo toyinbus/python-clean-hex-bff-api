@@ -24,5 +24,11 @@ Ranges (add new numbers at the end of the matching block):
 
 from __future__ import annotations
 
+# ── Auth (20xxx) ────────────────────────────────────────────────────────────
+AUTH_TOKEN_MISSING = "20001"
+AUTH_TOKEN_INVALID = "20002"
+AUTH_TOKEN_EXPIRED = "20003"
+AUTH_INSUFFICIENT_PERMISSION = "20004"
+
 # ── User (70xxx) ────────────────────────────────────────────────────────────
 USER_EMAIL_TAKEN = "70001"

@@ -24,7 +24,7 @@ from app.internal.middleware.access_log import AccessLogMiddleware
 from app.internal.middleware.body_log import BodyLogMiddleware
 from app.internal.middleware.request_context import RequestContextMiddleware
 from app.pkg import sensitive_keys
-from app.pkg.config.config import Config, provide_config
+from app.pkg.config.config import Config, provide_config, validate_auth_settings
 from app.utils import apperror
 from app.utils.logging_config import configure_logging
 from app.utils.response import response_error
@@ -61,6 +61,7 @@ def _build_lifespan(cfg: Config, container: ApplicationContainer):
 def create_app() -> FastAPI:
     cfg = provide_config()
     configure_logging(cfg.LOG_LEVEL, cfg.LOG_FORMAT)
+    validate_auth_settings(cfg)
     # We emit our own structured access log (AccessLogMiddleware); silence
     # uvicorn's default access logger so lines are not duplicated.
     logging.getLogger("uvicorn.access").disabled = True
@@ -109,7 +110,39 @@ def create_app() -> FastAPI:
         feature.register_http(api)
     app.include_router(api)
 
+    _configure_openapi_security(app)
+
     return app
+
+
+def _configure_openapi_security(app: FastAPI) -> None:
+    """Document Bearer JWT auth in Swagger when docs are enabled."""
+
+    if app.openapi_url is None:
+        return
+
+    original_openapi = app.openapi
+
+    def custom_openapi():
+        if app.openapi_schema:
+            return app.openapi_schema
+        schema = original_openapi()
+        schema.setdefault("components", {}).setdefault("securitySchemes", {})[
+            "BearerAuth"
+        ] = {
+            "type": "http",
+            "scheme": "bearer",
+            "bearerFormat": "JWT",
+            "description": (
+                "JWT access token. Permissions are carried in the ``permissions`` claim "
+                "(see GET /auth/permissions). Mint a dev token via POST /auth/token when "
+                "AUTH_DEV_TOKEN_ENABLED=true."
+            ),
+        }
+        app.openapi_schema = schema
+        return app.openapi_schema
+
+    app.openapi = custom_openapi  # type: ignore[method-assign]
 
 
 def _register_exception_handlers(app: FastAPI) -> None:
