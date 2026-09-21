@@ -1,0 +1,31 @@
+# Keep the build context small and secrets out of the image.
+
+# VCS
+.git
+.gitignore
+
+# Virtualenv / caches
+.venv
+venv
+**/__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.mypy_cache
+.coverage
+htmlcov
+
+# Secrets / local env
+.env
+.env.*
+
+# Dev-only files not needed at runtime
+tests
+Makefile
+*.md
+openapi.json
+
+# Editors / OS
+.DS_Store
+.vscode
+.idea

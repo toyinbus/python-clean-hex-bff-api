@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+
+# Virtualenv
+.venv/
+venv/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# Generated
+openapi.json
+
+# Editors / OS
+.DS_Store
+.vscode/
+.idea/

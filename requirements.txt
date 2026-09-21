@@ -1,0 +1,15 @@
+# Runtime dependencies for python-clean-hex-bff-api (FastAPI CleanHex BFF)
+fastapi==0.115.6
+uvicorn[standard]==0.34.0
+pydantic[email]==2.10.4
+pydantic-settings==2.7.1
+email-validator==2.2.0
+dependency-injector==4.46.0
+# Only used when STORAGE_TYPE=postgres (imported lazily); the default
+# in-memory demo runs without ever touching it.
+asyncpg==0.30.0
+
+# Dev / test
+pytest==8.3.4
+httpx==0.28.1
+ruff==0.8.4
