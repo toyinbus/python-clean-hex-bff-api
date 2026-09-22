@@ -5,10 +5,10 @@ from __future__ import annotations
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
-from app.internal.auth.delivery.http.dependencies import AuthGuard
-from app.internal.auth.delivery.http.handler import AuthHandler
-from app.internal.auth.delivery.http.route import register_routes
-from app.internal.auth.infra.service.jwt_token_validator import JwtTokenValidatorImpl
+from app.internal.feature.auth.delivery.http.dependencies import AuthGuard
+from app.internal.feature.auth.delivery.http.handler import AuthHandler
+from app.internal.feature.auth.delivery.http.route import register_routes
+from app.internal.feature.auth.infra.service.jwt_token_validator import JwtTokenValidatorImpl
 from app.pkg.auth.permissions import Permission
 from app.utils import apperror
 

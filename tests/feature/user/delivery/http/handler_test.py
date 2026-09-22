@@ -12,8 +12,8 @@ from datetime import UTC, datetime
 from fastapi import APIRouter, FastAPI
 from fastapi.testclient import TestClient
 
-from app.internal.auth.delivery.http.dependencies import AuthGuard
-from app.internal.auth.infra.service.jwt_token_validator import JwtTokenValidatorImpl
+from app.internal.feature.auth.delivery.http.dependencies import AuthGuard
+from app.internal.feature.auth.infra.service.jwt_token_validator import JwtTokenValidatorImpl
 from app.internal.feature.user.delivery.http.handler import UserHandler
 from app.internal.feature.user.delivery.http.route import register_routes
 from app.internal.feature.user.domain.entity.user import (

@@ -6,9 +6,9 @@ from http import HTTPStatus
 
 from fastapi.responses import JSONResponse
 
-from app.internal.auth.delivery.http.dto.example import MeResponse, PublicStatusResponse
-from app.internal.auth.delivery.http.dto.token import IssueTokenRequest, IssueTokenResponse
-from app.internal.auth.domain.port.token_validator import TokenValidator
+from app.internal.feature.auth.delivery.http.dto.example import MeResponse, PublicStatusResponse
+from app.internal.feature.auth.delivery.http.dto.token import IssueTokenRequest, IssueTokenResponse
+from app.internal.feature.auth.domain.port.token_validator import TokenValidator
 from app.pkg.auth.authenticated_user import AuthenticatedUser
 from app.pkg.auth.permissions import permission_descriptions
 from app.utils.response import response_success

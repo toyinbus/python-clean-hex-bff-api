@@ -11,7 +11,6 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, Query
 
-from app.internal.auth.delivery.http.dependencies import AuthGuard
 from app.internal.feature.user.delivery.http.dto.user import (
     CreateUserRequest,
     ListUsersQuery,
@@ -22,6 +21,7 @@ from app.internal.feature.user.delivery.http.dto.user import (
 )
 from app.internal.feature.user.delivery.http.handler import UserHandler
 from app.pkg.auth.permissions import Permission
+from app.pkg.auth.route_guard import RouteAuthGuard
 from app.utils.openapi import ErrorEnvelope, SuccessEnvelope
 
 # Shared error-envelope docs (documentation-only; handlers return JSONResponse).
@@ -31,7 +31,7 @@ _UNAUTHORIZED = {401: {"model": ErrorEnvelope, "description": "Missing or invali
 _FORBIDDEN = {403: {"model": ErrorEnvelope, "description": "Insufficient permission"}}
 
 
-def register_routes(handler: UserHandler, auth: AuthGuard) -> APIRouter:
+def register_routes(handler: UserHandler, auth: RouteAuthGuard) -> APIRouter:
     router = APIRouter(prefix="/users", tags=["users"])
 
     @router.get(

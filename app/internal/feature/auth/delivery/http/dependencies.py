@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import Depends
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 
-from app.internal.auth.domain.port.token_validator import TokenValidator
+from app.internal.feature.auth.domain.port.token_validator import TokenValidator
 from app.pkg import error_codes
 from app.pkg.auth.authenticated_user import AuthenticatedUser
 from app.pkg.auth.permissions import Permission

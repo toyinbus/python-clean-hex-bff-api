@@ -7,10 +7,10 @@ from typing import Annotated
 from fastapi import APIRouter, Depends
 from fastapi.security import HTTPAuthorizationCredentials
 
-from app.internal.auth.delivery.http.dependencies import AuthGuard, _bearer
-from app.internal.auth.delivery.http.dto.example import MeResponse, PublicStatusResponse
-from app.internal.auth.delivery.http.dto.token import IssueTokenRequest, IssueTokenResponse
-from app.internal.auth.delivery.http.handler import AuthHandler
+from app.internal.feature.auth.delivery.http.dependencies import AuthGuard, _bearer
+from app.internal.feature.auth.delivery.http.dto.example import MeResponse, PublicStatusResponse
+from app.internal.feature.auth.delivery.http.dto.token import IssueTokenRequest, IssueTokenResponse
+from app.internal.feature.auth.delivery.http.handler import AuthHandler
 from app.utils.openapi import ErrorEnvelope, SuccessEnvelope
 
 _UNAUTHORIZED = {401: {"model": ErrorEnvelope, "description": "Missing or invalid JWT"}}

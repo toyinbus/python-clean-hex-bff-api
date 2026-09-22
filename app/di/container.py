@@ -15,7 +15,7 @@ from __future__ import annotations
 
 from dependency_injector import containers, providers
 
-from app.internal.auth.set import AuthContainer
+from app.internal.feature.auth.set import AuthContainer
 from app.internal.feature.user.set import UserContainer
 from app.pkg.config.config import Config
 from app.pkg.database import Database
@@ -30,10 +30,8 @@ class ApplicationContainer(containers.DeclarativeContainer):
     # (see app.main lifespan). Injected into feature repositories that need it.
     database = providers.Singleton(Database)
 
-    # ── Auth (shared JWT guard + helper routes) ───────────────────────────────
-    auth = providers.Container(AuthContainer, config=config)
-
     # ── Features ──────────────────────────────────────────────────────────────
+    auth = providers.Container(AuthContainer, config=config)
     user = providers.Container(
         UserContainer,
         config=config,

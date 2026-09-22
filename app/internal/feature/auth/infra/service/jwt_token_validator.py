@@ -6,7 +6,7 @@ from datetime import UTC, datetime, timedelta
 
 import jwt
 
-from app.internal.auth.domain.port.token_validator import TokenValidator
+from app.internal.feature.auth.domain.port.token_validator import TokenValidator
 from app.pkg import error_codes
 from app.pkg.auth.authenticated_user import AuthenticatedUser
 from app.pkg.auth.permissions import Permission

@@ -16,8 +16,8 @@ from __future__ import annotations
 from dependency_injector import containers, providers
 from fastapi import APIRouter
 
-from app.internal.auth.delivery.http.dependencies import AuthGuard
 from app.internal.feature.user.delivery.http.handler import UserHandler
+from app.pkg.auth.route_guard import RouteAuthGuard
 from app.internal.feature.user.delivery.http.route import register_routes
 from app.internal.feature.user.infra.db.user_repository import UserRepositoryImpl
 from app.internal.feature.user.infra.db.user_repository_postgres import (
@@ -29,7 +29,7 @@ from app.internal.feature.user.usecase.user_usecase import UserUsecaseImpl
 class UserFeature:
     """Holds the handler and mounts the feature's routes (route registrar)."""
 
-    def __init__(self, handler: UserHandler, auth: AuthGuard) -> None:
+    def __init__(self, handler: UserHandler, auth: RouteAuthGuard) -> None:
         self._handler = handler
         self._auth = auth
 
